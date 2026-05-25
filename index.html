@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sprint Report Builder — Insight</title>
+<title>Sprint Report Builder — Demo</title>
 <style>
   :root {
     /* Insight brand palette (from SVG) */
@@ -309,6 +309,58 @@
   .overview-col .goal-text {
     font-size: 18px; line-height: 1.6; color: var(--slide-text);
   }
+  /* Value Delivered cards — punchy version */
+  .value-cards {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .value-card {
+    background: var(--slide-card);
+    border-radius: 10px;
+    padding: 16px 18px 16px 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    border-left: 4px solid var(--insight-magenta);
+    position: relative;
+  }
+  .value-card .check-badge {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--insight-magenta) 0%, var(--insight-coral) 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(212, 14, 140, 0.25);
+    transform: scale(0);
+    animation: stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .value-card:nth-child(1) .check-badge { animation-delay: 0.2s; }
+  .value-card:nth-child(2) .check-badge { animation-delay: 0.35s; }
+  .value-card:nth-child(3) .check-badge { animation-delay: 0.5s; }
+  .value-card:nth-child(4) .check-badge { animation-delay: 0.65s; }
+  .value-card:nth-child(5) .check-badge { animation-delay: 0.8s; }
+  .value-card .check-badge svg {
+    width: 20px; height: 20px;
+  }
+  .value-card .vc-body { flex: 1; }
+  .value-card .vc-label {
+    font-size: 15px; font-weight: 700;
+    color: var(--insight-gray-dark);
+    margin: 0 0 4px;
+    letter-spacing: -0.2px;
+  }
+  .value-card .vc-desc {
+    font-size: 14px; line-height: 1.55;
+    color: var(--slide-text); margin: 0;
+  }
+
+  @keyframes stamp {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* Legacy value list — kept in case anything still uses it */
   .value-list { list-style: none; margin: 0; padding: 0; }
   .value-list li {
     margin-bottom: 18px; padding-left: 20px; position: relative;
@@ -582,12 +634,12 @@
 
 <!-- ===================== EDITOR ===================== -->
 <div id="editor" class="editor">
-  <h1>Sprint Report Builder</h1>
-  <div class="subtitle">Fill in the fields, hit <em>Build deck</em>, then present or export to PDF.</div>
+  <h1>Sprint Report Builder <span style="font-size:13px; background: var(--insight-magenta); color:#fff; padding: 3px 10px; border-radius: 12px; font-weight: 600; vertical-align: middle; margin-left: 8px;">DEMO</span></h1>
+  <div class="subtitle">This demo is pre-filled with sample data. Fill in the fields, hit <em>Build deck</em>, then present or export to PDF.</div>
 
   <div class="section">
     <div class="section-title">Project & sprint</div>
-    <div class="row"><label>Project name</label><input id="f-project" type="text" placeholder="iPaaS" /></div>
+    <div class="row"><label>Project name</label><input id="f-project" type="text" placeholder="Acme Project" /></div>
     <div class="row"><label>Sprint number / name</label><input id="f-sprint-name" type="text" placeholder="Sprint 4" /></div>
     <div class="row"><label>Sprint dates</label><input id="f-sprint-dates" type="text" placeholder="Apr 28 – May 11, 2026" /></div>
     <div class="row"><label>Reporting date</label><input id="f-report-date" type="text" placeholder="May 12, 2026" /></div>
@@ -693,6 +745,7 @@
     <button id="btn-save">Save inputs</button>
     <button id="btn-load">Load saved</button>
     <button id="btn-clear">Clear</button>
+    <button id="btn-reset-demo">Reset to demo</button>
   </div>
 
   <div class="hint">
@@ -717,7 +770,116 @@
 
   const INSIGHT_LOGO = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyNC4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNTIuNjAxOTg5NyA2Mi43NjE5OTcyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNTIuNjAxOTg5NyA2Mi43NjE5OTcyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPg0KCS5zdDB7ZmlsbDojQjAxQzg3O30NCgkuc3Qxe2ZpbGw6I0QzMEM1NTt9DQoJLnN0MntmaWxsOiNENDBFOEM7fQ0KCS5zdDN7ZmlsbDojRUQxOTQ0O30NCgkuc3Q0e2ZpbGw6IzU1NDc0MTt9DQo8L3N0eWxlPg0KPGc+DQoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE0MC45NTg5ODQ0LDE0LjQwNjk5NzdoNC4yOTk5ODc4djE3LjE5ODk5NzVoLTQuMjk5OTg3OFYxNC40MDY5OTc3eiBNMTQ1LjcwNTk5MzcsMi42MTY5OTY4DQoJCUMxNDUuNzA1OTkzNywxLjE2Nzk5OTMsMTQ0LjU3ODk3OTUsMCwxNDMuMTI5OTc0NCwwYy0xLjQ0OTk4MTcsMC0yLjYxNzAwNDQsMS4xNjc5OTkzLTIuNjE3MDA0NCwyLjYxNjk5NjgNCgkJYzAsMS40NDkwMDUxLDEuMTY3MDIyNywyLjU3NzAwMzUsMi42MTcwMDQ0LDIuNTc3MDAzNUMxNDQuNTc4OTc5NSw1LjE5NDAwMDIsMTQ1LjcwNTk5MzcsNC4wNjYwMDE5LDE0NS43MDU5OTM3LDIuNjE2OTk2OCIvPg0KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xMzEuNzQ1OTcxNywxOC4wOTE5OTUyaC00LjMwMDAxODNWMC44OTI5OTc3aDQuMzAwMDE4M1YxOC4wOTE5OTUyeiBNMTI2Ljk4Nzk3NjEsMjkuODgyOTk1Ng0KCQljMCwxLjQ0OTAwNTEsMS4xMjY5ODM2LDIuNjE3MDA0NCwyLjU3Njk5NTgsMi42MTcwMDQ0YzEuNDQ4OTc0NiwwLDIuNjE1OTk3My0xLjE2Nzk5OTMsMi42MTU5OTczLTIuNjE3MDA0NA0KCQljMC0xLjQ0OTk5NjktMS4xNjcwMjI3LTIuNTc2OTk1OC0yLjYxNTk5NzMtMi41NzY5OTU4QzEyOC4xMTQ5NTk3LDI3LjMwNTk5OTgsMTI2Ljk4Nzk3NjEsMjguNDMyOTk4NywxMjYuOTg3OTc2MSwyOS44ODI5OTU2Ii8+DQoJPHBhdGggY2xhc3M9InN0MiIgZD0iTTE1MS43MDg5ODQ0LDExLjY0Mjk5NzdoLTE3LjE5OTAwNTFWNy4zNDI5MDMxaDE3LjE5OTAwNTFWMTEuNjQyOTk3N3ogTTEyMi43MjAwMDEyLDYuODk1OTk2MQ0KCQljLTEuNDUwMDEyMiwwLTIuNjE3MDA0NCwxLjEyNzAwNjUtMi42MTcwMDQ0LDIuNTc3MDAzNWMwLDEuNDQ4OTk3NSwxLjE2Njk5MjIsMi42MTY5OTY4LDIuNjE3MDA0NCwyLjYxNjk5NjgNCgkJYzEuNDQ4OTc0NiwwLDIuNTc2OTk1OC0xLjE2Nzk5OTMsMi41NzY5OTU4LTIuNjE2OTk2OEMxMjUuMjk2OTk3MSw4LjAyMzAwMjYsMTI0LjE2ODk3NTgsNi44OTU5OTYxLDEyMi43MjAwMDEyLDYuODk1OTk2MSIvPg0KCTxwYXRoIGNsYXNzPSJzdDMiIGQ9Ik0xMjAuOTk1OTcxNywyMC44NTYwMDI4aDE3LjE5OTAwNTF2NC4yOTg5OTZoLTE3LjE5OTAwNTFWMjAuODU2MDAyOHogTTE0OS45ODU5OTI0LDI1LjYwMjk5NjgNCgkJYzEuNDQ4OTc0NiwwLDIuNjE1OTk3My0xLjEyNjk5ODksMi42MTU5OTczLTIuNTc2OTk1OGMwLTEuNDQ4OTk3NS0xLjE2NzAyMjctMi42MTY5OTY4LTIuNjE1OTk3My0yLjYxNjk5NjgNCgkJYy0xLjQ1MDAxMjIsMC0yLjU3NzAyNjQsMS4xNjc5OTkzLTIuNTc3MDI2NCwyLjYxNjk5NjhDMTQ3LjQwODk2NjEsMjQuNDc1OTk3OSwxNDguNTM1OTgwMiwyNS42MDI5OTY4LDE0OS45ODU5OTI0LDI1LjYwMjk5NjgiLz4NCgk8cGF0aCBjbGFzcz0ic3Q0IiBkPSJNMCwyMi42NDU5OTYxaDQuOTc5OTk1N3YzMC40MTEwMDMxSDBWMjIuNjQ1OTk2MXogTTU1Ljk1NTk5MzcsMjUuMTYzMDAyDQoJCWMwLTEuNTgzMDAwMi0xLjIzMTAxODEtMi44NTcwMDIzLTIuODEzMDE4OC0yLjg1NzAwMjNjLTEuNTgyOTc3MywwLTIuODU3OTcxMiwxLjI3NDAwMjEtMi44NTc5NzEyLDIuODU3MDAyMw0KCQljMCwxLjU4MjAwMDcsMS4yNzQ5OTM5LDIuODEyOTk1OSwyLjg1Nzk3MTIsMi44MTI5OTU5QzU0LjcyNDk3NTYsMjcuOTc1OTk3OSw1NS45NTU5OTM3LDI2Ljc0NTAwMjcsNTUuOTU1OTkzNywyNS4xNjMwMDINCgkJIE01NS41NTk5OTc2LDMxLjYwNTAwMzRINTAuNzIzOTk5djIxLjQ1MTk5NThoNC44MzU5OTg1VjMxLjYwNTAwMzR6IE0yOC4xMTkwMDMzLDQwLjEyNDAwMDVoLTAuMDAzOTk3OA0KCQljMC01LjkwMzk5OTMtMy43NjMwMDA1LTkuMTM0MDAyNy05Ljk5NzAwOTMtOS4xMzQwMDI3Yy00LjMyNjk5NTgsMC03Ljc4NTk5NTUsMS45NTcwMDA3LTguMTg4OTk1NCwyLjE1Mzk5OTN2MTkuOTE0MDAxNWg0LjgzNTk5ODUNCgkJVjM1LjkxNDAwMTVjMC41MjY5OTI4LTAuMjMzMDAxNywxLjk2MjAwNTYtMC43OTEwMDA0LDMuNTkzOTk0MS0wLjc5MTAwMDRjMy4yOTEwMDA0LDAsNC45MjQwMTEyLDEuODQyMDAyOSw0LjkyNDAxMTIsNC45NDU5OTkxDQoJCXYxMi45ODg5OTg0aDQuODM1OTk4NVY0MC4xMjQwMDA1eiBNMTAyLjAyMzk4NjgsNDAuMTI0MDAwNWMwLTUuNjExMDAwMS0zLjk0NTk4MzktOS4xMzgwMDA1LTguOTg4MDA2Ni05LjEzODAwMDUNCgkJYy0yLjkyMzAwNDIsMC00LjI1MDk3NjYsMC44NTkwMDEyLTQuMzYyOTc2MSwwLjkyODAwMTRWMjEuNTMyOTk3MWgtNC44MzUwMjJ2MzEuNTI1MDAxNWg0LjgzNTAyMlYzNS45MTUwMDA5DQoJCWMwLjE1Nzk4OTUtMC4wODAwMDE4LDEuNjAwOTgyNy0wLjc5MTk5OTgsMy40NDg5NzQ2LTAuNzkxOTk5OGMzLjI1NjAxMiwwLDUuMDcwMDA3MywxLjc2Mzk5OTksNS4wNzAwMDczLDQuOTQ1OTk5MXYxMi45ODg5OTg0DQoJCWg0LjgzNDk5MTVWNDAuMTI0MDAwNUgxMDIuMDIzOTg2OHogTTQ3LjA2Mjk4ODMsNDYuOTcwMDAxMmMwLTMuNTkzMDAyMy0yLjU4MjAwMDctNS4xODE5OTkyLTUuMTk1MDA3My02LjMxNTAwMjQNCgkJYy0wLjQ1NDk4NjYtMC4xOTc5OTgtMS44NDk5NzU2LTAuNzc0MDAyMS0yLjA4NDk5MTUtMC44NzQwMDA1Yy0xLjgxNzk5MzItMC43NzcwMDA0LTMuMDkzOTk0MS0xLjMwODk5ODEtMy4wOTM5OTQxLTIuNzYzOTk5OQ0KCQljMC0xLjA5Mjk5NDcsMC44NTk5ODU0LTIuMTMyOTk1NiwzLjQyODAwOS0yLjEzMjk5NTZjMi40NzY5ODk3LDAsNC42MTk5OTUxLDEuMjcwOTk2MSw0LjgzOTk5NjMsMS40MDIwMDA0bDEuNzk4MDA0Mi0zLjM2MTk5OTUNCgkJYy0wLjEzMjAxOS0wLjA4ODAwNTEtMi41MDUwMDQ5LTEuOTM1MDA1Mi02Ljk0NTAwNzMtMS45MzUwMDUyYy00LjcwNDAxLDAtNy45NjQ5OTYzLDIuNTQ4MDA0Mi03Ljk2NDk5NjMsNi40MTYwMDA0DQoJCWMwLDMuNDYxOTk4LDIuNDUzMDAyOSw0Ljk5NjAwMjIsNC43NzM5ODY4LDUuOTUyMDAzNWMwLjI5NTk5LDAuMTIxOTk0LDIuMzUwMDA2MSwwLjk5MDk5NzMsMi44MDIwMDIsMS4xNjk5OTgyDQoJCWMxLjgzODAxMjcsMC43Mjk5OTU3LDIuNzE4OTk0MSwxLjQ4NTAwMDYsMi43MTg5OTQxLDIuNjk0MDAwMmMwLDEuMzEyOTk1OS0xLjIyMTk4NDksMi41MTIwMDEtMy44MjA5ODM5LDIuNTEyMDAxDQoJCWMtMi43MjMwMjI1LDAtNS4wNTU5OTk4LTEuNTIxMDAzNy01LjQ0Mjk5MzItMS43NTA5OTk1bC0xLjgxNDAyNTksMy4zNjEwMDAxDQoJCWMwLjI2NDAwNzYsMC4yMTk5OTM2LDMuMjUyMDE0MiwyLjI4NTk5NTUsNy44MjUwMTIyLDIuMjg1OTk1NUM0My42MzQwMDI3LDUzLjYyODk5NzgsNDcuMDYyOTg4Myw1MS4xOTAwMDI0LDQ3LjA2Mjk4ODMsNDYuOTcwMDAxMg0KCQkgTTc5LjEwODAwMTcsMzMuMTQzOTk3MnYxOC4zNTUwMDM0YzAsNi41OTY5OTYzLTIuOTkwOTk3MywxMS4yNjI5OTY3LTEwLjczNjk5OTUsMTEuMjYyOTk2Nw0KCQljLTMuMDM4MDI0OSwwLTUuMjIyMDE1NC0wLjU3MDk5OTEtNS42MDAwMDYxLTAuNjczOTk5OHYtMy45NjIwMDE4YzAuNTA5MDAyNywwLjE1MTAwMSwyLjczODk4MzIsMC43MzgwMDI4LDQuOTkyMDA0NCwwLjczODAwMjgNCgkJYzQuODIwOTgzOSwwLDYuNTA5OTc5Mi0yLjM5MzAwMTYsNi41MDk5NzkyLTUuNjgwOTk5OHYtMC40MDI5OTk5Yy0wLjMyMzk3NDYsMC4xNDcwMDMyLTEuODE1OTc5LDAuODQ3OTk5Ni00LjE2ODk3NTgsMC44NDc5OTk2DQoJCWMtNi45NDMwMjM3LDAtMTAuNzMzMDAxNy01LjE3NzAwMi0xMC43MzMwMDE3LTExLjI5NTk5NzZjMC02LjQ2MTk5OCw0LjAwNTk4MTQtMTEuMzQyMDAyOSwxMS4yNTM5OTc4LTExLjM0MjAwMjkNCgkJQzc0LjkzMjk4MzQsMzAuOTg5OTk3OSw3OC41MzY5ODczLDMyLjg3OTk5NzMsNzkuMTA4MDAxNywzMy4xNDM5OTcyIE03NC4yNzI5Nzk3LDM1LjkxNDAwMTUNCgkJYy0wLjMwNzk4MzQtMC4xMzEwMDQzLTEuNzU3OTk1Ni0wLjc5MTAwMDQtMy43MzU5OTI0LTAuNzkxMDAwNGMtMy42MDUwMTEsMC02LjI4Njk4NzMsMi42ODA5OTk4LTYuMjg2OTg3Myw3LjIwODk5OTYNCgkJYzAsNC44NjAwMDA2LDMuMDU4OTkwNSw3LjE2Njk5OTgsNi4yODk5NzgsNy4xNjY5OTk4YzEuODg1MDA5OCwwLDMuNTU3MDA2OC0wLjY2MzAwMiwzLjczMzAwMTctMC43OTM5OTg3VjM1LjkxNDAwMTV6DQoJCSBNMTExLjIxNjAwMzQsMzUuNTYxOTk2NWg1LjQ4MDk4NzV2LTMuOTU2OTkzMWgtNS41MjYwMDF2LTYuNDQ4MDA1N2gtNC43OTAwMDg1djE5LjMzNDk5OTENCgkJYzAsNS44NTgwMDE3LDIuNjM2MDE2OCw4LjU2NjAwMTksOC4zODgwMDA1LDguNTY2MDAxOWgxLjkyODAwOXYtNC4wNDM5OTg3Yy0zLjg5OTAxNzMsMC01LjQ4MDk4NzUtMS4xMjEwMDIyLTUuNDgwOTg3NS01LjE0MDk5ODgNCgkJVjM1LjU2MTk5NjV6Ii8+DQoJPHBhdGggY2xhc3M9InN0NCIgZD0iTTEyMy4wMjQ5NjM0LDUwLjA2NjAwMTljLTEuMTM0MDAyNywwLTIuMDI3MDA4MSwwLjkyMTk5NzEtMi4wMjcwMDgxLDIuMDIzMDAyNnYwLjAxMDk5NA0KCQljMCwxLjEwMDAwNjEsMC44ODIwMTksMi4wMTAwMDIxLDIuMDE1OTkxMiwyLjAxMDAwMjFjMS4xMzQwMDI3LDAsMi4wMjgwMTUxLTAuOTIxOTk3MSwyLjAyODAxNTEtMi4wMjA5OTYxVjUyLjA3NjAwNA0KCQlDMTI1LjA0MTk2MTcsNTAuOTc3MDA1LDEyNC4xNTg5NjYxLDUwLjA2NjAwMTksMTIzLjAyNDk2MzQsNTAuMDY2MDAxOSBNMTI0LjcxNzk1NjUsNTIuMDg5MDA0NQ0KCQljMCwwLjkzNzk5NTktMC43MzMwMDE3LDEuNzA4MDAwMi0xLjcwNDAxLDEuNzA4MDAwMmMtMC45NjQ5OTYzLDAtMS42OTE5ODYxLTAuNzU4MDAzMi0xLjY5MTk4NjEtMS42OTgwMDU3di0wLjAwOTk5NDUNCgkJYzAtMC45NDAwMDI0LDAuNzMxOTk0Ni0xLjcwODk5OTYsMS43MDMwMDI5LTEuNzA4OTk5NmMwLjk2NjAwMzQsMCwxLjY5Mjk5MzIsMC43NTg5OTUxLDEuNjkyOTkzMiwxLjY5Nzk5OFY1Mi4wODkwMDQ1eg0KCQkgTTEyMy41MDM5NjczLDUyLjMyMDk5OTFjMC4yNjE5OTM0LTAuMDk2MDAwNywwLjQ0MTk4NjEtMC4zMDUwMDAzLDAuNDQxOTg2MS0wLjYzNTk5NHYtMC4wMTAwMDIxDQoJCWMwLTAuMTgxOTk5Mi0wLjA1Nzk4MzQtMC4zMzU5OTg1LTAuMTY5OTgyOS0wLjQ0Nzk5OGMtMC4xNDQwMTI1LTAuMTQ1MDA0My0wLjM1Njk5NDYtMC4yMjQwMDY3LTAuNjM1MDA5OC0wLjIyNDAwNjdIMTIyLjIyOTk1DQoJCXYyLjA1MzAwMTRoMC40NTMwMDI5di0wLjY2MTk5NDloMC4zNTY5OTQ2bDAuNDM3MDExNywwLjY2MTk5NDloMC41MjgwMTUxTDEyMy41MDM5NjczLDUyLjMyMDk5OTF6IE0xMjMuNDg3OTc2MSw1MS43MTE5OTgNCgkJYzAsMC4xNzEwMDUyLTAuMTIzMDE2NCwwLjI5NDAwNjMtMC4zNTIwMjAzLDAuMjk0MDA2M2gtMC40NTMwMDI5di0wLjYwMjAwNWgwLjQ0MjAxNjYNCgkJYzAuMjIzOTk5LDAsMC4zNjMwMDY2LDAuMTAxMDA1NiwwLjM2MzAwNjYsMC4yOTcwMDQ3VjUxLjcxMTk5OHoiLz4NCjwvZz4NCjwvc3ZnPg0K';
 
-  const STORAGE_KEY = 'sprintReportBuilder_insight_v4';
+  const STORAGE_KEY = 'sprintReportBuilder_insight_v4_demo';
+
+  // ===== DEMO DATA =====
+  const DEMO_DATA = {
+    'f-project': 'Trillion Dollar Company',
+    'f-sprint-name': 'Sprint 7',
+    'f-sprint-dates': 'May 12 – May 25, 2026',
+    'f-report-date': 'May 26, 2026',
+    'f-author': 'Alex Morgan',
+    'f-ticket-prefix': 'https://trilliondollarco.atlassian.net/browse/',
+    'f-sprint-goal': 'Launch the redesigned checkout flow to 100% of users and finalize the loyalty rewards integration so customers can earn points on every purchase.',
+    'f-goal-status': 'partial',
+    'f-value-delivered': 'Checkout Redesign | Rolled out the new checkout experience to all users, cutting average checkout time by 22% and reducing cart abandonment by 9 percentage points.\nLoyalty Integration | Completed the rewards engine integration; customers now automatically earn and redeem points at point of sale across web and mobile.\nPerformance Foundation | Migrated three critical services to the new caching layer, dropping median API response time from 340ms to 180ms.',
+    'f-m-team': '8',
+    'f-m-bugs': '6',
+    'f-m-planned': '52',
+    'f-m-completed': '44',
+    'f-m-cycle': '3.4',
+    'f-m-lead': '6.1',
+    'f-m-dev': '2.3',
+    'f-m-qa': '1.1',
+    'f-decisionlog': 'https://trilliondollarco.atlassian.net/wiki/decisions',
+    'f-next-goal': 'Stabilize the loyalty rewards platform under production load and deliver the first phase of personalized recommendations for the homepage.',
+    'f-risklog': 'https://trilliondollarco.atlassian.net/wiki/risks',
+    'f-sprintlink': 'https://trilliondollarco.atlassian.net/jira/sprint/7',
+    closedItems: [
+      { id: 'TDC-412', description: 'Checkout flow redesign — final rollout to 100% traffic', ticketUrl: '' },
+      { id: 'TDC-418', description: 'Loyalty rewards engine — points accrual & redemption', ticketUrl: '' },
+      { id: 'TDC-421', description: 'Migrate Orders service to Redis caching layer', ticketUrl: '' },
+      { id: 'TDC-403', description: 'Migrate Catalog service to Redis caching layer', ticketUrl: '' },
+      { id: 'TDC-425', description: 'Add idempotency keys to payment webhook handlers', ticketUrl: '' },
+      { id: 'TDC-430', description: 'Fix double-charge edge case in Apple Pay flow', ticketUrl: '' },
+      { id: 'TDC-407', description: 'Mobile app: persistent cart across sessions', ticketUrl: '' }
+    ],
+    risks: [
+      {
+        title: 'Loyalty engine performance under peak load',
+        description: 'Rewards service has not yet been load-tested at expected peak-season volumes. Risk of degraded performance during high-traffic events.',
+        rag: 'amber',
+        status: 'Load testing scheduled for next sprint. Capacity model under review with infrastructure team.',
+        owner: 'Priya Chen / Infra team',
+        ticketUrl: 'https://trilliondollarco.atlassian.net/browse/TDC-440'
+      },
+      {
+        title: 'Third-party payment provider API changes',
+        description: 'Payment provider has announced breaking API changes effective July 1. Current integration will require updates before deadline.',
+        rag: 'amber',
+        status: 'Engineering spike completed. Migration plan drafted; estimated one sprint of effort.',
+        owner: 'Marcus Lee',
+        ticketUrl: 'https://trilliondollarco.atlassian.net/browse/TDC-445'
+      },
+      {
+        title: 'Loyalty terms pending Legal sign-off',
+        description: 'Customer-facing loyalty program terms are still in legal review. Cannot communicate publicly until signed off.',
+        rag: 'red',
+        status: 'Legal review ongoing. Escalated to General Counsel; expected resolution within five business days.',
+        owner: 'Jamie Rivera / Legal',
+        ticketUrl: ''
+      }
+    ],
+    decisions: [
+      {
+        date: 'May 14',
+        title: 'Approved gradual rollout for checkout redesign',
+        detail: 'Decided to ramp from 50% to 100% over 48 hours rather than instant cutover. Reduces blast radius if regressions are detected in production.'
+      },
+      {
+        date: 'May 16',
+        title: 'Caching layer: Redis over Memcached',
+        detail: 'After benchmarking, selected Redis for its richer data structures and persistence options. Already in use elsewhere in the platform, reducing operational complexity.'
+      },
+      {
+        date: 'May 19',
+        title: 'Loyalty points value: 1 point = $0.01',
+        detail: 'Aligned with industry standard and competitor analysis. Provides flexibility for promotional multipliers without confusing customers.'
+      },
+      {
+        date: 'May 22',
+        title: 'Defer recommendations engine to Sprint 9',
+        detail: 'Loyalty stabilization work is higher priority for Sprint 8. Recommendations pushed back one sprint to protect quality.'
+      }
+    ],
+    plannedItems: [
+      { id: 'TDC-440', description: 'Load test loyalty rewards engine at peak volumes', ticketUrl: '' },
+      { id: 'TDC-445', description: 'Migrate to v2 payment provider API', ticketUrl: '' },
+      { id: 'TDC-451', description: 'Personalized recommendations — Phase 1 backend', ticketUrl: '' },
+      { id: 'TDC-453', description: 'Homepage personalization UI scaffolding', ticketUrl: '' },
+      { id: 'TDC-458', description: 'Observability: custom metrics for loyalty events', ticketUrl: '' },
+      { id: 'TDC-462', description: 'Reduce cold-start latency for serverless checkout functions', ticketUrl: '' },
+      { id: 'TDC-464', description: 'Mobile app: biometric authentication on Android', ticketUrl: '' }
+    ]
+  };
+
+  function applyDemoData() {
+    Object.keys(DEMO_DATA).forEach(key => {
+      if (key === 'closedItems' || key === 'risks' || key === 'decisions' || key === 'plannedItems') return;
+      const el = document.getElementById(key);
+      if (el) el.value = DEMO_DATA[key];
+    });
+    // Deep clone the list data and assign fresh _uid values
+    window._closedItems = DEMO_DATA.closedItems.map(it => Object.assign({}, it, { _uid: uid() }));
+    window._risks = DEMO_DATA.risks.map(it => Object.assign({}, it, { _uid: uid() }));
+    window._decisions = DEMO_DATA.decisions.map(it => Object.assign({}, it, { _uid: uid() }));
+    window._plannedItems = DEMO_DATA.plannedItems.map(it => Object.assign({}, it, { _uid: uid() }));
+    renderClosedItems();
+    renderRisks();
+    renderDecisions();
+    renderPlannedItems();
+  }
+
 
   // Simple text/textarea/select field IDs (excluding card-based lists)
   const fieldIds = [
@@ -798,7 +960,7 @@
       '</div>' +
       '<div class="item-card-body">' +
         '<div class="grid-2">' +
-          '<div><label>Ticket ID</label><input type="text" data-field="id" value="' + esc(it.id) + '" placeholder="IPAAS-501" /></div>' +
+          '<div><label>Ticket ID</label><input type="text" data-field="id" value="' + esc(it.id) + '" placeholder="TDC-412" /></div>' +
           '<div><label>Ticket URL (optional)</label><input type="text" data-field="ticketUrl" value="' + esc(it.ticketUrl) + '" placeholder="Leave blank to use prefix + ID" /></div>' +
         '</div>' +
         '<div><label>Description</label><input type="text" data-field="description" value="' + esc(it.description) + '" placeholder="What was done" /></div>' +
@@ -971,7 +1133,7 @@
       '</div>' +
       '<div class="item-card-body">' +
         '<div class="grid-2">' +
-          '<div><label>Ticket ID</label><input type="text" data-field="id" value="' + esc(it.id) + '" placeholder="IPAAS-556" /></div>' +
+          '<div><label>Ticket ID</label><input type="text" data-field="id" value="' + esc(it.id) + '" placeholder="TDC-440" /></div>' +
           '<div><label>Ticket URL (optional)</label><input type="text" data-field="ticketUrl" value="' + esc(it.ticketUrl) + '" placeholder="Leave blank to use prefix + ID" /></div>' +
         '</div>' +
         '<div><label>Description</label><input type="text" data-field="description" value="' + esc(it.description) + '" placeholder="What needs to be done" /></div>' +
@@ -1133,10 +1295,17 @@
       return '<div class="achievement-pill ' + (key === activeKey ? 'active ' + m.cls : '') + '">' + m.label + '</div>';
     }).join('');
 
+    const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
     const values = v.valueDelivered.length === 0
       ? '<div class="empty-state">No value items added.</div>'
-      : '<ul class="value-list">' + v.valueDelivered.map((row, i) =>
-          '<li class="anim-fade anim-fade-' + Math.min(i+1, 5) + '"><strong>' + esc(row[0]) + ':</strong> ' + esc(row[1]) + '</li>'
+      : '<ul class="value-cards">' + v.valueDelivered.map((row, i) =>
+          '<li class="value-card anim-fade anim-fade-' + Math.min(i+1, 5) + '">' +
+            '<div class="check-badge">' + checkSvg + '</div>' +
+            '<div class="vc-body">' +
+              '<div class="vc-label">' + esc(row[0]) + '</div>' +
+              '<div class="vc-desc">' + esc(row[1]) + '</div>' +
+            '</div>' +
+          '</li>'
         ).join('') + '</ul>';
 
     return '<div class="slide">' +
@@ -1585,6 +1754,11 @@
   $('btn-save').addEventListener('click', saveInputs);
   $('btn-load').addEventListener('click', loadInputs);
   $('btn-clear').addEventListener('click', clearAll);
+  $('btn-reset-demo').addEventListener('click', () => {
+    if (!confirm('Replace current values with demo data?')) return;
+    applyDemoData();
+    showToast('Demo data restored');
+  });
 
   $('btn-add-closed').addEventListener('click', addClosedItem);
   $('btn-add-risk').addEventListener('click', addRisk);
@@ -1612,8 +1786,16 @@
   renderDecisions();
   renderPlannedItems();
 
-  // Auto-load saved
-  try { if (localStorage.getItem(STORAGE_KEY)) loadInputs(); } catch (e) {}
+  // Auto-load saved data if present, else apply demo data for first-time visitors
+  try {
+    if (localStorage.getItem(STORAGE_KEY)) {
+      loadInputs();
+    } else {
+      applyDemoData();
+    }
+  } catch (e) {
+    applyDemoData();
+  }
 
 })();
 </script>
